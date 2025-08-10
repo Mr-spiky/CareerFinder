@@ -1,15 +1,21 @@
-# React + Vite
+# CareerFinder - RedisAI Challenge
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+CareerFinder is a web app built for the DEV.to Redis AI Challenge. It helps users find career options based on skills, experience, and education.  
+The backend uses **RedisAI** to process user input via a pre-trained model in ONNX format.  
 
-Currently, two official plugins are available:
+## Features
+- React frontend with a career suggestion form
+- Node.js backend with RedisAI integration
+- Mock predictions fallback if model isn't loaded
+- CORS-enabled API
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Tech Stack
+- React
+- Node.js + Express
+- RedisAI (ONNX model)
+- Redis Cloud
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-'''
-
-'''
+## How to Run
+1. Clone this repo:
+```bash
+git clone https://github.com/YOUR_USERNAME/careerfinder.git
