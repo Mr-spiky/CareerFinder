@@ -76,30 +76,77 @@ const CareerForm = () => {
     }));
   };
 
-  const handleSubmit = async () => {
-  try {
-    const response = await fetch('http://localhost:3001/api/predict', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        skills: formData.skills,
-        experience: formData.experience.split(' ')[0],
-        education: "Bachelor"
-      })
-    });
-    const result = await response.json();
-    console.log("API Response:", result); // 👈 Check browser console
+  // Function to convert experience string to a number
+  const convertExperienceToNumber = (experienceString) => {
+    if (!experienceString) return 0;
     
-    if (!result.prediction) {
-      throw new Error("No prediction returned");
+    // Extract numbers from the string
+    const matches = experienceString.match(/\d+/g);
+    if (!matches) return 0;
+    
+    // For ranges like "0-1", take the average
+    if (matches.length >= 2) {
+      const min = parseInt(matches[0]);
+      const max = parseInt(matches[1]);
+      return Math.round((min + max) / 2);
     }
+    
+    // For single numbers or "10+"
+    if (experienceString.includes('+')) {
+      return parseInt(matches[0]) + 2; // Add some buffer for "10+"
+    }
+    
+    return parseInt(matches[0]);
+  };
 
-    navigate("/result", { state: result });
-  } catch (err) {
-    setError(err.message);
-    console.error("Submission error:", err);
-  }
-};
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // Convert experience to a proper number
+      const experienceNumber = convertExperienceToNumber(formData.experience);
+      
+      console.log("Sending data:", {
+        skills: formData.skills,
+        experience: experienceNumber,
+        education: "Bachelor"
+      });
+
+      const response = await fetch('http://localhost:3001/api/predict', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          skills: formData.skills,
+          experience: experienceNumber, // Send as number, not string
+          education: "Bachelor"
+        })
+      });
+
+      // Check if response is OK
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Server error: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("API Response:", result);
+      
+      if (!result.prediction) {
+        throw new Error("No prediction returned from server");
+      }
+
+      navigate("/result", { state: result });
+    } catch (err) {
+      setError(err.message);
+      console.error("Submission error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const currentQuestion = questions[step - 1];
   const isNextDisabled = 
